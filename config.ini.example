@@ -1,0 +1,14 @@
+[DB]
+;Configure db information
+adapter = mysql2
+encoding = utf8
+database = im_test
+pool = 5
+username = root
+password = root
+
+
+[HOST]
+; API接口地址
+ip = 0.0.0.0
+port = 3000
