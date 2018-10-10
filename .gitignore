@@ -1,5 +1,11 @@
 .idea/
+
+# Ignore all logfiles and tempfiles.
+log/*.log
+!/log/.keep
+
 __pycache__
+
 *.pyc
-*.log
+
 config.ini
