@@ -1,8 +1,8 @@
 .idea/
 
 # Ignore all logfiles and tempfiles.
-log/*.log
-!/log/.keep
+logs/*.log
+!/logs/.keep
 
 __pycache__
 
