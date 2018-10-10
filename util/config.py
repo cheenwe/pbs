@@ -51,12 +51,39 @@ class GetConfig(object):
     def host_port(self):
         return int(self.config_file.get('HOST', 'port'))
 
+    #proxy ip config
+    @LazyProperty
+    def proxy_local(self):
+        return self.config_file.get('proxy','local')
+ 
+    @LazyProperty
+    def proxy_online(self):
+        return self.config_file.get('proxy', 'online')
+
+    #shijijiayuan ip config
+    @LazyProperty
+    def user_img_url(self):
+        return self.config_file.get('shijijiayuan','img_url')
+ 
+    @LazyProperty
+    def user_login_url(self):
+        return self.config_file.get('shijijiayuan', 'login_url')
+
+    @LazyProperty
+    def user_name(self):
+        return self.config_file.get('shijijiayuan', 'name')
+
+    @LazyProperty
+    def user_password(self):
+        return self.config_file.get('shijijiayuan', 'password')
+
 if __name__ == '__main__':
-    gg = GetConfig()
-    print(gg.db_type)
-    print(gg.db_name)
-    print(gg.db_host)
-    print(gg.db_port)
-    print(gg.proxy_getter_functions)
-    print(gg.host_ip)
-    print(gg.host_port)
+    configs = GetConfig()
+    print(configs.db_type)
+    print(configs.db_name)
+    print(configs.db_host)
+    print(configs.db_port)
+    print(configs.proxy_getter_functions)
+    print(configs.host_ip)
+    print(configs.host_port)
+    

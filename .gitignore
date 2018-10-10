@@ -1,4 +1,7 @@
 .idea/
+download/
+tmp/
+csv/
 
 # Ignore all logfiles and tempfiles.
 logs/*.log

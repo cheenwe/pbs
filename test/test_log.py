@@ -21,5 +21,6 @@ def testLogHandler():
     log.info('this is a log from test2')
 
 
+
 if __name__ == '__main__':
     testLogHandler()

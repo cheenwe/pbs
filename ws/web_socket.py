@@ -10,9 +10,9 @@ from util.log_handler import LogHandler
 
 from util.config import GetConfig
 
-gg = GetConfig()
+configs = GetConfig()
 
-host = 'ws://'+ str(gg.host_ip) +':'+ str(gg.host_port) + "/cable"
+host = 'ws://'+ str(configs.host_ip) +':'+ str(configs.host_port) + "/cable"
 
 
 try:

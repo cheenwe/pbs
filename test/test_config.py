@@ -12,11 +12,16 @@ def testGetConfig():
     test class GetConfig in Util/GetConfig
     :return:
     """
-    gg = GetConfig()
-    print(gg.host_ip)
+    configs = GetConfig()
+    print(configs.host_ip)
+    print(configs.proxy_local)
+    
+    print(configs.proxy_online)
+    print(configs.user_img_url)
+    print(configs.user_login_url)
 
-    # assert isinstance(gg.proxy_getter_functions, list)
-    # print(gg.proxy_getter_functions)
+    # assert isinstance(configs.proxy_getter_functions, list)
+    # print(configs.proxy_getter_functions)
 
 if __name__ == '__main__':
     testGetConfig()

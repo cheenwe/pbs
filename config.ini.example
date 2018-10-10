@@ -12,3 +12,17 @@ password = root
 ; API接口地址
 ip = 0.0.0.0
 port = 3000
+
+
+[proxy]
+; 代理ip 接口地址
+local = http://192.168.101.5:8000
+online = http://123.207.35.36:5010
+ 
+
+[shijijiayuan]
+; shijijiayuan 账号配置 
+login_url = https://passport.jiayuan.com/dologin.php?host=www.jiayuan.com&pre_url= 
+name = xxx
+password = xxx
+img_url = http://www.jiayuan.com/18126809

@@ -2,11 +2,25 @@
 # !/usr/bin/env python
 
 import requests
-import time
+import time, os, sys
 from lxml import etree
+from contextlib import closing
 
 from util.log_handler import LogHandler
 from util.web_request import WebRequest
+
+sys.path.append('..')
+
+from util.log_handler import LogHandler
+
+log = LogHandler('photo')
+
+# #当前文件的路径
+# pwd = os.getcwd()
+# #当前文件的父路径
+# father_path=os.path.abspath(os.path.dirname(pwd)+os.path.sep+".")
+# #当前文件的前两级目录
+# grader_father=os.path.abspath(os.path.dirname(pwd)+os.path.sep+"..")
 
 
 # noinspection PyPep8Naming
@@ -94,3 +108,46 @@ def validUsefulProxy(proxy):
     except Exception as e:
         # logger.error(str(e))
         return False
+
+def WriteInfo(folder_name, data):
+    folder_name = folder_name + "/" + "0.csv"
+    with open(folder_name, 'a+') as f:
+        writer = f.write(data)
+
+def CheckDir(dir):
+    if not os.path.exists(dir):
+      os.makedirs(dir)
+    pass
+
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'
+}
+ 
+#http请求超时设置
+timeout = 10
+#下载
+def DownloadFile(img_url, dir_name, img_name):
+    # check_download_dir(folder_name)
+    try:
+        with closing(requests.get(img_url, stream=True, headers=headers, timeout=timeout)) as r:
+            rc = r.status_code
+            if 299 < rc or rc < 200:
+                print('returnCode%s\t%s' % (rc, img_url))
+                return
+            content_length = int(r.headers.get('content-length', '0'))
+
+            if content_length == 0:
+                print('size0\t%s' % img_url)
+                return
+            try:
+                with open(os.path.join(dir_name, img_name), 'wb') as f:
+                    for data in r.iter_content(1024):
+                        f.write(data)
+            except:
+                # print('save fail \t%s' % img_url)
+                log.error('save fail \t%s' % img_url)
+    except:
+        # print('requests fail \t%s' % img_url)
+
+        log.error('requests fail \t%s' % img_url)
