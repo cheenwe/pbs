@@ -26,3 +26,7 @@ login_url = https://passport.jiayuan.com/dologin.php?host=www.jiayuan.com&pre_ur
 name = xxx
 password = xxx
 img_url = http://www.jiayuan.com/18126809
+start_id = 5861595 
+end_id = 6500000
+open_download = 1
+open_save_online = 1
