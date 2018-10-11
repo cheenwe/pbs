@@ -10,6 +10,7 @@ sys.path.append('..')
 from util.log_handler import LogHandler
 
 log = LogHandler('proxy')
+loger = LogHandler('proxy_ok')
 
 # 
 #2. 获取到代理后判断能否访问网站
@@ -46,7 +47,7 @@ def ValidIp(local=True, valid_host='http://httpbin.org/ip'):
 			else:
 				#数据获取成功返回ip
 				# print(proxy)
-				log.info(" ip校验成功")
+				loger.info(" ip校验成功, ip地址：%s", proxy[0])
 				retry_count = -1
 				return proxy
 		except Exception:

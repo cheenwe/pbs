@@ -77,6 +77,23 @@ class GetConfig(object):
     def user_password(self):
         return self.config_file.get('shijijiayuan', 'password')
 
+    @LazyProperty
+    def user_start_id(self):
+        return self.config_file.get('shijijiayuan', 'start_id')
+
+    @LazyProperty
+    def user_end_id(self):
+        return self.config_file.get('shijijiayuan', 'end_id')
+        
+    @LazyProperty
+    def open_download(self):
+        return self.config_file.get('shijijiayuan', 'open_download')
+
+    @LazyProperty
+    def open_save_online(self):
+        return self.config_file.get('shijijiayuan', 'open_save_online')
+
+
 if __name__ == '__main__':
     configs = GetConfig()
     print(configs.db_type)

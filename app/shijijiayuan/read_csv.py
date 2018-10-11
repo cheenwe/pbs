@@ -79,14 +79,15 @@ def check_html(photo_hash, data, folder_name):
 		folder_info = folder_name.split('/') 
 		uid = folder_info[-1]
 		photo_num = folder_info[-2]
+		
+		log.info("download  success:  " + photo_num  + "/" + uid )
 		data = {'uid': uid, 'photo_num': photo_num, 'photo_hash': photo_hash, 'sign': 1, 'base_info': base_info, 'photos': photo_list }
 
 		create_user_with_photos(data)
 
-		log.info("download photo success:  " + photo_num  + "/" + uid )
 
 	except Exception as e:
-		log.error("check photo error: %s", folder_name.split("/")[-1])
+		log.error("check photo error: " + uid)
 
 		# proxies = ValidIp(True,'http://www.jiayuan.com')
 
@@ -125,6 +126,7 @@ for file in csv_files:
 	print(file)
 	csv_file = csv.reader(open(csv_path+file,'r'))
 	# # 遍历文件内容
+	o_id = 0
 	for line in csv_file:
 		# print(proxies[0])
 		u_num = line[0]
@@ -133,4 +135,8 @@ for file in csv_files:
 		# print(photo_hash)
 		download_folder = u_num + "/" + u_id
 		VisitPage(photo_hash, download_folder, proxies[0])
+		o_id  += 1
+
+		if o_id % 500 == 0:
+			proxies = ValidIp(True,'http://www.jiayuan.com')
 

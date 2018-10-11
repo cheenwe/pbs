@@ -1,10 +1,11 @@
 .idea/
 download/
+download_*/
 tmp/
 csv/
 
 # Ignore all logfiles and tempfiles.
-logs/*.log
+logs/
 !/logs/.keep
 
 __pycache__

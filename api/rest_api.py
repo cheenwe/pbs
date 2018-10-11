@@ -15,30 +15,30 @@ class RestApi:
   def create_record(self,name):
     d = {'name': name}
     r = requests.post(host + '/data_records', data=d)
-    print(r.text)
+    # print(r.text)
 
   def create_video(self, id, name):
     d = {'name': name, 'id': id}
     r = requests.post(host + '/data_videos', data=d)
-    print(r.text)
+    # print(r.text)
 
   def create_file(self, id, name):
     d = {'name': name, 'id': id}
     r = requests.post(host + '/data_files', data=d)
-    print(r.text)
+    # print(r.text)
 
   def create_user(self, data):
     r = requests.post(host + '/api/v1/dc/users', data=data)
-    print(r.text)
+    # print(r.text)
 
   def create_user_with_photos(self, data):
     r = requests.post(host + '/api/v1/dc/user/photos', data=data)
-    print(r.text)
+    # print(r.text)
 
   def create_video(self, id, name):
     d = {'name': name, 'id': id}
     r = requests.post(host + '/data_videos', data=d)
-    print(r.text)
+    # print(r.text)
 
   def check_info(self):
     r = requests.get(host + '/api/v1/dc/check_info')
