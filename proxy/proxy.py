@@ -62,13 +62,13 @@ def NewProxyIp(local=True):
 		#本地代理获取
 		local_ip = GetLocalIp()
 		# print(ip)
-		log.info("获取本地代理ip成功,地址: %s", local_ip[1])
+		log.info("获取本地代理ip成功,地址:  %s", local_ip[1])
 		return local_ip
 
 	elif local == "1":
 		#在线代理获取
 		online_ip = GetOnlineIp()
-		log.info("获取在线代理ip成功,地址: %s", online_ip[1])
+		log.info("获取在线代理ip成功,地址:  %s", online_ip[1])
 		return online_ip
 
 	else:

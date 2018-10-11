@@ -87,9 +87,9 @@ def check_html(photo_hash, data, folder_name):
 
 
 	except Exception as e:
-		log.error("check photo error: " + uid)
+		log.error("check photo error: " + photo_hash)
 
-		# proxies = ValidIp(True,'http://www.jiayuan.com')
+		proxies = ValidIp(True,'http://www.jiayuan.com')
 
 		# print(" x		.		. 	. 	x", format(e))  # 账户已关闭
 

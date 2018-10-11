@@ -11,5 +11,6 @@ logs/
 __pycache__
 
 *.pyc
+*.bak
 
 config.ini

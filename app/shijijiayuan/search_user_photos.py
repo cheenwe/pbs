@@ -32,7 +32,7 @@ configs = GetConfig()
 
 
 # proxies = ValidIp('1','http://www.jiayuan.com')
-proxies = ValidIp(True,'http://www.jiayuan.com')
+proxies = ValidIp('1','http://www.jiayuan.com')
 url_address = 'http://www.jiayuan.com/'
 
 #当前文件的路径
@@ -102,7 +102,7 @@ def check_html(photo_hash, data, folder_name):
     except Exception as e:
         log.error("check photo error: " + photo_hash)
 
-        # proxies = ValidIp(True,'http://www.jiayuan.com')
+        proxies = ValidIp('1','http://www.jiayuan.com')
 
         # print(" x     .       .   .   x", format(e))  # 账户已关闭
 
@@ -174,7 +174,7 @@ def CheckHtml(data, sn, proxy_ip):
     error_num = error_num + 1
     if error_num%100 == 0:
 
-        proxies = ValidIp(True,'http://www.jiayuan.com')
+        proxies = ValidIp('1','http://www.jiayuan.com')
         log.info("获取新ip %s", proxies)
 
 
@@ -236,5 +236,5 @@ for i in range(s_id, e_id):
     # print(i)
     visit_page(i, proxies[0])
     o_id  += 1
-    if o_id % 500 == 0:
-        proxies = ValidIp(True,'http://www.jiayuan.com')
+    if o_id % 200 == 0:
+        proxies = ValidIp('1','http://www.jiayuan.com')
