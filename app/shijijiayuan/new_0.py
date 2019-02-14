@@ -23,7 +23,7 @@ from util.log_handler import LogHandler
 from util.config import GetConfig
 
 # log = LogHandler('read_csv')
-log = LogHandler('search_user_photos')
+log = LogHandler('new_0')
 
 api = RestApi()
 
@@ -31,24 +31,23 @@ api = RestApi()
 configs = GetConfig()
 
 
-# proxies = ValidIp(True,'http://www.jiayuan.com')
+# proxies = ValidIp(True,'https://www.jiayuan.com')
 
 
-proxies = ValidIp(True,'http://www.jiayuan.com')
+proxies = ValidIp(True,'https://www.jiayuan.com')
 
 print(proxies)
 
-url_address = 'http://www.jiayuan.com/'
+url_address = 'https://www.jiayuan.com/'
 
 #当前文件的路径
 
 csv_path = project_path+'\logs\csv\\'
 
 #输出文件夹
-out_dir = './download_new_test'
+out_dir = './download_new'
 
 MYCOOKIE = GetUserCookie(proxies)
-print(MYCOOKIE)
 
 error_num = 0
 
@@ -110,12 +109,12 @@ def check_html(photo_hash, data, folder_name):
 
 		if  int(configs.open_save_online) == 1:
 			data = {'uid': uid, 'photo_num': photo_num, 'photo_hash': photo_hash, 'sign': 1, 'base_info': base_info, 'photos': photo_list }
-			# create_user_with_photos(data)
+			create_user_with_photos(data)
 
 	except Exception as e:
 		log.error("check photo error: " + photo_hash)
 
-		proxies = ValidIp(True,'http://www.jiayuan.com')
+		proxies = ValidIp(True,'https://www.jiayuan.com')
 
 		# print(" x     .       .   .   x", format(e))  # 账户已关闭
 
@@ -159,12 +158,14 @@ def CheckHtml(data, sn, proxy_ip):
 		try:
 			if "的照片" in photo_title:
 				num = int(photo_title.split('(')[1].strip(")"))
+
+				log.info (num)
 				if num > 2:
 					data = str(num) + "," + str(sn) + "," + photo_lik
 					# print (num)
 					photo_hash_key = photo_lik.split('uid_hash=')[1].split('&')[0]
-					photo_hash = "http://photo.jiayuan.com/showphoto.php?uid_hash="+photo_hash_key
-					# http://photo.jiayuan.com/showphoto.php?uid_hash=97513ed75d4ee0b49977540cc28adeea&tid=0&cache_key=
+					photo_hash = "https://photo.jiayuan.com/showphoto.php?uid_hash="+photo_hash_key
+					# https://photo.jiayuan.com/showphoto.php?uid_hash=97513ed75d4ee0b49977540cc28adeea&tid=0&cache_key=
 					#调用接口
 					# print( sn + "========================================")
 					#
@@ -185,7 +186,7 @@ def CheckHtml(data, sn, proxy_ip):
 		log.info("uid:  %s  count: %s", str(sn), str(error_num) )
 		error_num = error_num + 1
 		if error_num%1000 == 0:
-			proxies = ValidIp(True,'http://www.jiayuan.com')
+			proxies = ValidIp(True,'https://www.jiayuan.com')
 			log.info("获取新ip %s", proxies)
 
 
@@ -233,12 +234,12 @@ def visit_page(sn, proxy_ip):
 #       o_id  += 1
 
 #       if o_id % 500 == 0:
-#           proxies = ValidIp(True,'http://www.jiayuan.com')
+#           proxies = ValidIp(True,'https://www.jiayuan.com')
 
 
 
-s_id = int(configs.user_start_id)
-e_id = int(configs.user_end_id)
+s_id = 12423715
+e_id = 12425715
 
 o_id = 0
 for i in range(s_id, e_id):
@@ -246,4 +247,4 @@ for i in range(s_id, e_id):
 	visit_page(i, proxies[0])
 	# o_id  += 1
 	# if o_id % 200 == 0:
-	# 	proxies = ValidIp(True,'http://www.jiayuan.com')
+	# 	proxies = ValidIp(True,'https://www.jiayuan.com')

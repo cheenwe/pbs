@@ -1,6 +1,7 @@
 .idea/
 download/
 download_*/
+download*
 tmp/
 csv/
 

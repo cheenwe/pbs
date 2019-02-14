@@ -139,7 +139,7 @@ def DownloadFile(img_url, dir_name, img_name):
 
             if content_length == 0:
                 print('size0\t%s' % img_url)
-                return
+                # return
             try:
                 with open(os.path.join(dir_name, img_name), 'wb') as f:
                     for data in r.iter_content(1024):

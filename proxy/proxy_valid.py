@@ -12,13 +12,13 @@ from util.log_handler import LogHandler
 log = LogHandler('proxy')
 loger = LogHandler('proxy_ok')
 
-# 
+#
 #2. 获取到代理后判断能否访问网站
-# 
+#
 
 #获取ip,调用NewProxyIp()默认为在线获取，NewProxyIp("1")为本地代理获取
 def GenNewIp(local):
-	proxy = NewProxyIp(local) 
+	proxy = NewProxyIp(local)
 	return proxy
 
 #验证IP地址是否能进入网站
@@ -27,12 +27,19 @@ def ValidIp(local=True, valid_host='http://httpbin.org/ip'):
 	#调用获取ip方法
 	proxy = GenNewIp(local)
 	# print(proxy)
-	
-	retry_count = 5
+
+	retry_count = 20
 	# url = 'https://www.jiayuan.com'
 	# url = "http://google.com/"
 	timeout = 1
-	headers = ""
+	headers={
+	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	'Accept-Encoding': 'gzip, deflate',
+	'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+	'Cache-Control': 'max-age=0',
+	'Connection': 'keep-alive',
+	}
+
 	while retry_count > 0:
 		try:
 			# html = requests.get(url, headers=headers, timeout=timeout)#, proxies=proxy)
@@ -41,7 +48,7 @@ def ValidIp(local=True, valid_host='http://httpbin.org/ip'):
 			#判断是否拿到网页数据
 			if html.status_code != 200:
 				#数据获取失败再次请求
-				res = ValidIp() 
+				res = ValidIp()
 				log.error("代理ip校验失败：%s", proxy[0])
 
 			else:

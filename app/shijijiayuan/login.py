@@ -18,16 +18,23 @@ configs = GetConfig()
 # print(configs.user_name)
 # print(configs.user_password)
 
-# res = ValidIp('1','http://www.jiayuan.com' )
+# res = ValidIp('1','https://www.jiayuan.com' )
 #获取ip
-proxies = ValidIp(True,'http://www.jiayuan.com' )#ValidIp()
+
+# proxies = ValidIp(True,'https://i.jiayuan.com' )
+
+# proxies = ValidIp('1','http://m.jiayuan.com' )
 
 def GetUserCookie():
-  img_url=str(configs.user_img_url) #'http://www.jiayuan.com/18126809'
+  img_url=str(configs.user_img_url) #'https://www.jiayuan.com/18126809'
   s=requests.session()
   # print(s.cookies.get_dict())#先打印一下，此时一般应该是空的。
-  res=s.get(img_url,proxies=proxies[0], stream=True)
-  login_url=str(configs.user_login_url) #'https://passport.jiayuan.com/dologin.php?host=www.jiayuan.com&pre_url='
+
+  res=s.get(img_url, stream=True)
+  # res=s.get(img_url,proxies=proxies[0], stream=True)
+
+
+  login_url=str(configs.user_login_url) #'httpss://passport.jiayuan.com/dologin.php?host=www.jiayuan.com&pre_url='
   data= {
     'name':str(configs.user_name),
     'password':str(configs.user_password),

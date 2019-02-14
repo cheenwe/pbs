@@ -48,3 +48,9 @@ class RestApi:
     r = requests.get('http://127.0.0.1:3001/users.json')
     return(r.text)
  
+
+  #获取爬虫爬取用户id
+  def get_uid(self, data):
+    r = requests.get(host + '/api/v1/uid', data=data)
+    # print(r.text)
+    return(r.text)

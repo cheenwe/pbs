@@ -19,10 +19,10 @@ proxy_local_host = configs.proxy_local
 proxy_online_host = configs.proxy_online
 
 
-# 
+#
 # 1.只调用一个方法，本地和网络均可用
-#  
-#  
+#
+#
 #使用本地代理获取ip
 def GetLocalIp():
 
@@ -54,7 +54,7 @@ def GetOnlineIp():
 	}
 	return [proxies, ip_port]
 
- 
+
 #选择不同代理获取ip方法
 def NewProxyIp(local=True):
 
@@ -75,6 +75,6 @@ def NewProxyIp(local=True):
 		log.error('获取ip失败')
 		return -1
 
-# print(NewProxyIp())
+# print(NewProxyIp("1"))
 
 

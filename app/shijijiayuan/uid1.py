@@ -2,64 +2,90 @@
 # 根据用户起始id去爬取数据并传入服务器
 
 import requests
-import csv
-import os, sys,time, json
+import os, sys,time, json, random, csv
 from bs4 import BeautifulSoup
-from login import GetUserCookie
 from pyquery import PyQuery as pq
-# from tomorrow import threads
-import random
+from tomorrow import threads 
+
 #当前文件的路径
 pwd = os.getcwd()
 project_path=os.path.abspath(os.path.dirname(pwd)+os.path.sep+"..")
 sys.path.append(project_path)
-print(project_path)
+# print(project_path)
+
+from login import GetUserCookie
 from proxy.proxy_valid import ValidIp
 from api.rest_api import RestApi
 from util.util_function import CheckDir, DownloadFile, WriteInfo
-
 from util.log_handler import LogHandler
-
 from util.config import GetConfig
 
-# log = LogHandler('read_csv')
-log = LogHandler('search_user_photos')
+# change: 定义当前爬虫名字
+app = "uid1"
 
+# change: 每次请求 uid 数量
+req_nums = 200
+
+log = LogHandler(app)
+
+# 初始化
 api = RestApi()
-
-
 configs = GetConfig()
 
-
-# proxies = ValidIp(True,'http://www.jiayuan.com')
-
-
-proxies = ValidIp(True,'http://www.jiayuan.com')
-
-print(proxies)
-
-url_address = 'http://www.jiayuan.com/'
+url_address = 'https://www.jiayuan.com/'
 
 #当前文件的路径
-
 csv_path = project_path+'\logs\csv\\'
 
 #输出文件夹
-out_dir = './download_new_test'
+out_dir = './download.new'
 
-MYCOOKIE = GetUserCookie(proxies)
-print(MYCOOKIE)
+# cookie = GetUserCookie()
 
 error_num = 0
 
-def create_user_with_photos(data):
+# proxies = ValidIp(True,'https://www.jiayuan.com')
+
+# 写csv文件
+def WriteCsv(data):
+	with open("need_check.csv", 'a+') as f:
+		writer = f.write(data+'\n')
+		#先写入columns_name
+	pass
+
+# # 请求代理 ip
+# def RequestIp():
+# 	global proxies
+# 	proxies = ValidIp(True,'https://www.jiayuan.com')
+
+# RequestIp()
+
+# print(proxies)
+
+
+# 请求Cookie
+def GetCookie():
+	global cookies
+	cookies = GetUserCookie()
+
+GetCookie()
+
+# 下载文件
+@threads(8)
+def DownloadPicFile(url, folder_name, file_name):
+	DownloadFile(url, folder_name, file_name)
+
+
+def CreateUserPhoto(data):
 	try:
 		api.create_user_with_photos(data)
 	except Exception as e:
-
 		log.error("api request fail: %s", format(e)) # 接口请求失败
 
-def check_html(photo_hash, data, folder_name):
+
+#=> 4.处理照片的网页,下载数据
+# @threads(2)
+def CheckPhotoHtml(photo_hash, data, folder_name):
 	try:
 		# photo info
 		photo_list_text = data.find_all('li', class_="cur")[0].get_text()
@@ -80,10 +106,6 @@ def check_html(photo_hash, data, folder_name):
 		# log.info("write csv succss: " + base_info)
 		# 检查图片并下载
 		dls = data.find(id='phoBig').find("ul").find_all('img')
-		# print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-		# print(dls)
-		# print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 		i = 1
 		photo_list = ''
@@ -95,11 +117,9 @@ def check_html(photo_hash, data, folder_name):
 			# print(folder_name.split("/")[-1])
 			#
 			if  int(configs.open_download) == 1:
-				DownloadFile(url, folder_name, file_name)
-
+				DownloadPicFile(url, folder_name, file_name)
 			photo = url + ","
 			photo_list += photo
-
 
 		folder_info = folder_name.split('/')
 		# print(folder_info)
@@ -110,17 +130,23 @@ def check_html(photo_hash, data, folder_name):
 
 		if  int(configs.open_save_online) == 1:
 			data = {'uid': uid, 'photo_num': photo_num, 'photo_hash': photo_hash, 'sign': 1, 'base_info': base_info, 'photos': photo_list }
-			# create_user_with_photos(data)
+			CreateUserPhoto(data)
 
 	except Exception as e:
 		log.error("check photo error: " + photo_hash)
 
-		proxies = ValidIp(True,'http://www.jiayuan.com')
+		data = str(photo_hash) + "," + str(folder_name)
+
+		WriteCsv(data)
+
+		RequestIp() #ValidIp(True,'https://www.jiayuan.com')
 
 		# print(" x     .       .   .   x", format(e))  # 账户已关闭
 
-# 访问指定的网页
-def VisitPage(photo_hash, download_folder, proxy_ip):
+#=> 3.访问指定带有照片的网页
+
+# @threads(2)
+def VisitPhotoPage(photo_hash, download_folder):
 
 	folder_name = out_dir + "/" + download_folder
 	CheckDir(folder_name)
@@ -133,20 +159,20 @@ def VisitPage(photo_hash, download_folder, proxy_ip):
 	'Cache-Control': 'max-age=0',
 	'Connection': 'keep-alive',
 	}
-
-	cookies = MYCOOKIE
+ 
 	try:
-		rs = requests.get(photo_hash, proxies=proxy_ip,  headers=headers, cookies=cookies, verify=False)
+		rs = requests.get(photo_hash,   headers=headers, cookies=cookies, verify=False)
 		rs.encoding = 'utf-8'
 		# print(rs.text)
 		data = BeautifulSoup(rs.text, "lxml")
 		# print(data)
-		check_html(photo_hash, data, folder_name)
+		CheckPhotoHtml(photo_hash, data, folder_name)
 	except Exception as e:
 		print(e)
 
-# @threads(5)
-def CheckHtml(data, sn, proxy_ip):
+#=> 2.分析html页面中是否存在照片信息,判断照片数大于n开始爬取页面照片
+@threads(2)
+def CheckUidHtml(data, uid):
 	global error_num
 	try:
 		nav_text = data.find_all('ul', class_="nav_l")[0]
@@ -159,40 +185,46 @@ def CheckHtml(data, sn, proxy_ip):
 		try:
 			if "的照片" in photo_title:
 				num = int(photo_title.split('(')[1].strip(")"))
+
+				log.info (num)
 				if num > 2:
-					data = str(num) + "," + str(sn) + "," + photo_lik
+					data = str(num) + "," + str(uid) + "," + photo_lik
 					# print (num)
 					photo_hash_key = photo_lik.split('uid_hash=')[1].split('&')[0]
-					photo_hash = "http://photo.jiayuan.com/showphoto.php?uid_hash="+photo_hash_key
-					# http://photo.jiayuan.com/showphoto.php?uid_hash=97513ed75d4ee0b49977540cc28adeea&tid=0&cache_key=
+					photo_hash = "https://photo.jiayuan.com/showphoto.php?uid_hash="+photo_hash_key
+					# https://photo.jiayuan.com/showphoto.php?uid_hash=97513ed75d4ee0b49977540cc28adeea&tid=0&cache_key=
 					#调用接口
-					# print( sn + "========================================")
-					#
-					download_folder = str(num) + "/" + str(sn)
+					# print( uid + "========================================")
+					download_folder = str(num) + "/" + str(uid)
 					# print(photo_hash)
 					# print(download_folder)
+
 					# print(proxy_ip)
-					VisitPage(photo_hash, download_folder, proxy_ip)
-					# d = {'uid': sn, 'photo_num': num, 'photo_hash': photo_hash_key, 'sign': 1, }
+					VisitPhotoPage(photo_hash, download_folder)
+					# d = {'uid': uid, 'photo_num': num, 'photo_hash': photo_hash_key, 'sign': 1, }
 					# create_user(d)
 					# #写文件
-					# write_file(data)
+					# WriteCsv(data)
+
 		except Exception as e:
 			# print("no photo.          .       .       .               . ", format(e))  # 没有照片
-			log.info("没有照片 %s", sn)
+			log.info("没有照片 %s", uid)
 	except Exception as e:
 		# print(" x           .               .       .       x", format(e))  # 账户已关闭
-		log.info("uid:  %s  count: %s", str(sn), str(error_num) )
+		log.info("uid:  %s  count: %s", str(uid), str(error_num) )
 		error_num = error_num + 1
+		# 錯誤次數超过xx次后更换cookie及代理ip
 		if error_num%1000 == 0:
-			proxies = ValidIp(True,'http://www.jiayuan.com')
-			log.info("获取新ip %s", proxies)
+			RequestIp()
+			GetCookie()
+			# ValidIp(True,'https://www.jiayuan.com')
+			log.info("获取新ip %s")
 
+#=> 1.批量检查uid,获取页面数据
 
-
-# @threads(5)
-def visit_page(sn, proxy_ip):
-	url = url_address + str(sn)
+# @threads(3)
+def CheckUidPage(uid):
+	url = url_address + str(uid)
 	s = requests.session()
 	headers = {
 			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -202,48 +234,50 @@ def visit_page(sn, proxy_ip):
 			'Connection': 'keep-alive',
 			'Referer': url
 	}
-	cookies = MYCOOKIE
 	try:
-		rs = requests.get(url, proxies=proxy_ip,  headers=headers, cookies=cookies, verify=False)
+		rs = requests.get(url,   headers=headers, cookies=cookies, verify=False)
 		rs.encoding = 'utf-8'
 		# print(rs.text)
 		data = BeautifulSoup(rs.text, "lxml")
 		# print(data)
 		# print(proxy_ip)
-		CheckHtml(data, sn, proxy_ip)
+		CheckUidHtml(data, uid)
 	except Exception as e:
-		print(e)
+		log.warning("访问页面失败,开始更换代理ip及cookie:", e)
 
+		RequestIp()
+		GetCookie()
+		# proxies = ValidIp(True,'https://www.jiayuan.com')
+		try:
+			rs = requests.get(url,   headers=headers, cookies=cookies, verify=False)
+			rs.encoding = 'utf-8'
+			# print(rs.text)
+			data = BeautifulSoup(rs.text, "lxml")
+			# print(data)
+			# print(proxy_ip)
+			CheckUidHtml(data, uid)
+		except Exception as e:
+			log.warning("访问页面失败*2,我也没办法了", e)
 
-# print(csv_path)
-# csv_files = os.listdir(csv_path)
-# for file in csv_files:
-#   print(file)
-#   csv_file = csv.reader(open(csv_path+file,'r'))
-#   # # 遍历文件内容
-#   o_id = 0
-#   for line in csv_file:
-#       # print(proxies[0])
-#       u_num = line[0]
-#       u_id = line[1].strip(' ')
-#       photo_hash = line[2]
-#       # print(photo_hash)
-#       download_folder = u_num + "/" + u_id
-#       VisitPage(photo_hash, download_folder, proxies[0])
-#       o_id  += 1
+# 自动获取需要爬取用户id
+def GetUid(data):
+	try:
+		r = api.get_uid(data)
+		return (json.loads(r)["data"])
+	except Exception as e:
+		log.error("api request fail: %s", format(e))
 
-#       if o_id % 500 == 0:
-#           proxies = ValidIp(True,'http://www.jiayuan.com')
+while True:
+	# 定义需要爬取的文件个数及爬虫名字
+	data = {'need': req_nums, 'remark': app}
 
+	uid = GetUid(data)
 
+	log.info(uid)
 
-s_id = int(configs.user_start_id)
-e_id = int(configs.user_end_id)
+	s_id = uid[0]
+	e_id = uid[1]
 
-o_id = 0
-for i in range(s_id, e_id):
-	# print(i)
-	visit_page(i, proxies[0])
-	# o_id  += 1
-	# if o_id % 200 == 0:
-	# 	proxies = ValidIp(True,'http://www.jiayuan.com')
+	o_id = 0
+	for i in range(s_id, e_id):
+		CheckUidPage(i)

@@ -31,32 +31,32 @@ proxies = ValidIp(True,'http://www.jiayuan.com')
 #当前文件的路径
 
 # csv_path = project_path+'\logs\csv\\'
-csv_path = project_path+'/logs/csv/'
+csv_path = project_path+'/app/shijijiayuan/need_check.new.csv'
 
 #输出文件夹
-out_dir = './download'
+out_dir = './download.new'
 
-def GetUserCookie():
-  img_url=str(configs.user_img_url) #'http://www.jiayuan.com/18126809'
-  s=requests.session()
-  # print(s.cookies.get_dict())#先打印一下，此时一般应该是空的。
-  res=s.get(img_url,proxies=proxies[0], stream=True)
-  login_url=str(configs.user_login_url) #'https://passport.jiayuan.com/dologin.php?host=www.jiayuan.com&pre_url='
-  data= {
-    'name':str(configs.user_name),
-    'password':str(configs.user_password),
-    'remem_pass':'on',
-    'ajaxsubmit':1,
-    'ljg_login':1,
-  }
+# def GetUserCookie():
+#   img_url=str(configs.user_img_url) #'http://www.jiayuan.com/18126809'
+#   s=requests.session()
+#   # print(s.cookies.get_dict())#先打印一下，此时一般应该是空的。
+#   res=s.get(img_url,proxies=proxies[0], stream=True)
+#   data= {
+#     'name':str(configs.user_name),
+#     'password':str(configs.user_password),
+#     'remem_pass':'on',
+#     'ajaxsubmit':1,
+#     'ljg_login':1,
+#   }
 
-  rs=s.post(login_url,data)
-  c=requests.cookies.RequestsCookieJar()#利用RequestsCookieJar获取
-  # c.set('cookie-name','cookie-value')
-  s.cookies.update(c)
-  return s.cookies.get_dict()
+#   rs=s.post(login_url,data)
+#   c=requests.cookies.RequestsCookieJar()#利用RequestsCookieJar获取
+#   # c.set('cookie-name','cookie-value')
+#   s.cookies.update(c)
+#   return s.cookies.get_dict()
 
-MYCOOKIE = GetUserCookie()
+MYCOOKIE = GetUserCookie(proxies)
+print(MYCOOKIE)
 
 
 def create_user_with_photos(data):
@@ -130,11 +130,10 @@ def VisitPage(photo_hash, download_folder, proxy_ip):
 	'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
 	'Cache-Control': 'max-age=0',
 	'Connection': 'keep-alive',
-	'Host': '***',
 	}
 
 	try:
-		rs = requests.get(photo_hash, proxies=proxy_ip,  headers=headers, cookies=MYCOOKIE, verify=False)
+		rs = requests.get(photo_hash, headers=headers, cookies=MYCOOKIE, verify=False)
 		rs.encoding = 'utf-8'
 		# print(rs.text)
 		data = BeautifulSoup(rs.text, "lxml")
@@ -145,23 +144,27 @@ def VisitPage(photo_hash, download_folder, proxy_ip):
 		VisitPage(photo_hash, download_folder, proxies[0])
 		print(e)
 
-print(csv_path)
-csv_files = os.listdir(csv_path)
-for file in csv_files:
-	print(file)
-	csv_file = csv.reader(open(csv_path+file,'r'))
-	# # 遍历文件内容
-	o_id = 0
-	for line in csv_file:
-		# print(proxies[0])
-		u_num = line[0]
-		u_id = line[1].strip(' ')
-		photo_hash = line[2]
-		# print(photo_hash)
-		download_folder = u_num + "/" + u_id
-		VisitPage(photo_hash, download_folder, proxies[0])
-		# o_id  += 1
+# print(csv_path)
+# csv_files = os.listdir(csv_path)
+# for file in csv_files:
+# 	print(file)
+csv_file = csv.reader(open(csv_path,'r'))
+# # 遍历文件内容
+o_id = 0
+for line in csv_file:
+	# print(proxies[0])
+	# u_num = line[0]
+	# u_id = line[1].strip(' ')
+	photo_hash = line[0]
+	# print(photo_hash)
+	o_id  += 1
 
-		# if o_id % 500 == 0:
-		# 	proxies = ValidIp(True,'http://www.jiayuan.com')
+	download_folder = "new" + "/" + str(o_id)
+	# print(photo_hash)
+	# print(download_folder)
+	VisitPage(photo_hash, download_folder, proxies[0])
+	# o_id  += 1
+
+	# if o_id % 500 == 0:
+	# 	proxies = ValidIp(True,'http://www.jiayuan.com')
 
