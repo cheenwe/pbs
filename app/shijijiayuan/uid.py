@@ -5,7 +5,7 @@ import requests
 import os, sys,time, json, random, csv
 from bs4 import BeautifulSoup
 from pyquery import PyQuery as pq
-from tomorrow import threads
+from tomorrow import threads 
 
 #当前文件的路径
 pwd = os.getcwd()
@@ -32,7 +32,7 @@ log = LogHandler(app)
 api = RestApi()
 configs = GetConfig()
 
-url_address = 'https://www.jiayuan.com/'
+url_address = 'http://www.jiayuan.com/'
 
 #当前文件的路径
 csv_path = project_path+'\logs\csv\\'
@@ -54,13 +54,13 @@ def WriteCsv(data):
 	pass
 
 # # 请求代理 ip
-def RequestIp():
-	global proxies
-	proxies = ValidIp(True,'http://m.jiayuan.com/19235985')
+# def RequestIp():
+# 	global proxies
+# 	proxies = ValidIp(True,'https://www.jiayuan.com')
 
-RequestIp()
+# RequestIp()
 
-print(proxies)
+# print(proxies)
 
 
 # 请求Cookie
@@ -139,7 +139,7 @@ def CheckPhotoHtml(photo_hash, data, folder_name):
 
 		WriteCsv(data)
 
-		RequestIp() #ValidIp(True,'https://www.jiayuan.com')
+		# RequestIp() #ValidIp(True,'https://www.jiayuan.com')
 
 		# print(" x     .       .   .   x", format(e))  # 账户已关闭
 
@@ -159,9 +159,10 @@ def VisitPhotoPage(photo_hash, download_folder):
 	'Cache-Control': 'max-age=0',
 	'Connection': 'keep-alive',
 	}
-
+ 
 	try:
-		rs = requests.get(photo_hash,  proxies=proxies[0],  headers=headers, cookies=cookies, verify=False)
+		rs = requests.get(photo_hash, proxies=proxies[0],  headers=headers, cookies=cookies, verify=False)
+		# rs = requests.get(photo_hash,   headers=headers, cookies=cookies, verify=False)
 		rs.encoding = 'utf-8'
 		# print(rs.text)
 		data = BeautifulSoup(rs.text, "lxml")
@@ -191,7 +192,7 @@ def CheckUidHtml(data, uid):
 					data = str(num) + "," + str(uid) + "," + photo_lik
 					# print (num)
 					photo_hash_key = photo_lik.split('uid_hash=')[1].split('&')[0]
-					photo_hash = "https://photo.jiayuan.com/showphoto.php?uid_hash="+photo_hash_key
+					photo_hash = "http://photo.jiayuan.com/showphoto.php?uid_hash="+photo_hash_key
 					# https://photo.jiayuan.com/showphoto.php?uid_hash=97513ed75d4ee0b49977540cc28adeea&tid=0&cache_key=
 					#调用接口
 					# print( uid + "========================================")
@@ -215,7 +216,7 @@ def CheckUidHtml(data, uid):
 		error_num = error_num + 1
 		# 錯誤次數超过xx次后更换cookie及代理ip
 		if error_num%1000 == 0:
-			RequestIp()
+			# RequestIp()
 			GetCookie()
 			# ValidIp(True,'https://www.jiayuan.com')
 			log.info("获取新ip %s")
@@ -234,8 +235,10 @@ def CheckUidPage(uid):
 			'Connection': 'keep-alive',
 			'Referer': url
 	}
+	print(url)
 	try:
-		rs = requests.get(url, proxies=proxies[0],   headers=headers, cookies=cookies, verify=False)
+		rs = requests.get(url, proxies=proxies[0],  headers=headers, cookies=cookies, verify=False)
+		# rs = requests.get(url,   headers=headers, cookies=cookies, verify=False)
 		rs.encoding = 'utf-8'
 		# print(rs.text)
 		data = BeautifulSoup(rs.text, "lxml")
@@ -245,11 +248,13 @@ def CheckUidPage(uid):
 	except Exception as e:
 		log.warning("访问页面失败,开始更换代理ip及cookie:", e)
 
-		RequestIp()
+		# RequestIp()
 		GetCookie()
-		# proxies = ValidIp(True,'https://www.jiayuan.com')
+		proxies = ValidIp(True,'https://www.jiayuan.com')
 		try:
-			rs = requests.get(url,   headers=headers, cookies=cookies, verify=False)
+			# rs = requests.get(url,   headers=headers, cookies=cookies, verify=False)
+			rs = requests.get(url, proxies=proxies[0],  headers=headers, cookies=cookies, verify=False)
+
 			rs.encoding = 'utf-8'
 			# print(rs.text)
 			data = BeautifulSoup(rs.text, "lxml")
@@ -257,6 +262,15 @@ def CheckUidPage(uid):
 			# print(proxy_ip)
 			CheckUidHtml(data, uid)
 		except Exception as e:
+			time.sleep(600)
+
+			rs = requests.get(url,   headers=headers, cookies=cookies, verify=False)
+			rs.encoding = 'utf-8'
+			# print(rs.text)
+			data = BeautifulSoup(rs.text, "lxml")
+			# print(data)
+			# print(proxy_ip)
+			CheckUidHtml(data, uid)
 			log.warning("访问页面失败*2,我也没办法了", e)
 
 # 自动获取需要爬取用户id
@@ -277,7 +291,7 @@ while True:
 
 	s_id = uid[0]
 	e_id = uid[1]
-
+	
 	o_id = 0
 	for i in range(s_id, e_id):
 		CheckUidPage(i)
