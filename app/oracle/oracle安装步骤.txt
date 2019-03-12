@@ -1,0 +1,34 @@
+# LINUX下python 链接 oracle
+
+## 打开链接下载oracle并解压
+
+https://github.com/oracle/odpi
+
+
+把解压的oracle文件放入/opt/oracle/目录下
+
+## 操作步骤
+
+```
+sudo mkdir -p /opt/oracle
+
+sudo mv instantclient_18_3 /opt/oracle/
+
+cd /opt/oracle
+
+sudo sh -c "echo /opt/oracle/instantclient_18_3 > /etc/ld.so.conf.d/oracle-instantclient.conf" #注意版本对应instantclient_18_3
+
+sudo ldconfig
+
+export LD_LIBRARY_PATH=/opt/oracle/instantclient_18_3:$LD_LIBRARY_PATH
+
+
+mkdir -p /opt/oracle/instantclient_18_3/network/admin 
+
+```
+
+## 下载libaio
+
+sudo apt install libaio-dev
+ 
+## oracle数据库安装完成

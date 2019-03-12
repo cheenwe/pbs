@@ -3,20 +3,21 @@
 # https://github.com/oracle/odpi
 
 
+from tomorrow import threads 
 import cx_Oracle
 #引用模块cx_Oracle
-import os
-os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+import os, time
 
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+ 
 conn=cx_Oracle.connect("trff_zjk/trff_zjk@192.168.50.10:1521/orcl")
 
-#连接数据库
+# 连接数据库
 c=conn.cursor()
 
-sql="SELECT * FROM ( SELECT A.*, ROWNUM RN FROM (SELECT * FROM WX_ZPXX_20181227) A WHERE ROWNUM <= 40 ) WHERE RN >= 21"
-#获取cursor
-x=c.execute(sql)
+down_path = "/tmp/test/"
 
+@threads(16)
 def write_file(data, filename):
 
   # file_1 = "/Users/chenwei/workspace/python/upgrade_dir/"+ str(item[0])+'.jpg'
@@ -25,45 +26,63 @@ def write_file(data, filename):
   file.close()
   pass
 
-#使用cursor进行各种操作
-list=x.fetchall()
-for item in list:
+ 
+  
+def RunInDb(c,sql):
+  
+  list_a = []
+  # sql="SELECT * FROM ( SELECT A.*, ROWNUM RN FROM (SELECT * FROM WX_ZPXX_20181227) A WHERE ROWNUM <= 40 ) WHERE RN >= 21"
+  print(sql)
+  #获取cursor 
+  x=c.execute(sql)
 
-  hpzl = item[0]
-  hphm = item[1]
+  #使用cursor进行各种操作
+  list=x.fetchall()
+  for item in list:
+    hpzl = item[1]
+    hphm = item[2]
 
-  cjjg = item[5]
-  cjjgmc = item[6]
-  wfsj = item[7]
-  wfdd = item[8]
-  wfxw = item[9]
+    cjjg = item[6]
+    cjjgmc = item[7]
+    wfsj = item[8].strftime("%Y-%m-%d %H:%M:%S") 
+    wfdd = item[9]
+    wfxw = item[10]
+    id = item[11]
+    # print(item)
 
-  print(hpzl)
-  print(hphm)
+    photo1_data = item[3].read()
 
-  photo1_data = item[3].read()
+    if len(photo1_data) > 0:
+      photo1_url = "/violation/20190312/"  + str(item[0])+'_1.jpg'
+      photo1_path = down_path  + photo1_url
+      write_file(photo1_data, photo1_path)
+    else:
+      photo1_url=''
 
-  if len(photo1_data) > 0:
-    photo1_url = "/Users/chenwei/workspace/python/upgrade_dir/"+ str(item[0])+'_1.jpg'
-    write_file(photo1_data, photo1_url)
-  else:
-    photo1_url=''
+    photo2_data = item[4].read()
 
-  photo2_data = item[3].read()
+    if len(photo2_data) > 0:
+      photo2_url =  "/violation/20190312/"  +str(item[0])+'_2.jpg'
+      
+      photo2_path = down_path  + photo2_url
+      write_file(photo2_data, photo2_path)
+    else:
+      photo2_url=''
 
-  if len(photo2_data) > 0:
-    photo2_url = "/Users/chenwei/workspace/python/upgrade_dir/"+ str(item[0])+'_2.jpg'
-    write_file(photo2_data, photo2_url)
-  else:
-    photo2_url=''
+    photo3_data = item[5].read()
 
-  photo3_data = item[4].read()
-
-  if len(photo3_data) > 0:
-    photo3_url = "/Users/chenwei/workspace/python/upgrade_dir/"+ str(item[0])+'_3.jpg'
-    write_file(photo3_data, photo3_url)
-  else:
-    photo3_url=''
+    if len(photo3_data) > 0:
+      
+      photo3_url =  "/violation/20190312/"  +str(item[0])+'_3.jpg'
+      photo3_path = down_path  + photo3_url
+      write_file(photo3_data, photo3_path)
+    else:
+      photo3_url=''
+ 
+    a = (id, '', hpzl, hphm, wfdd, wfsj, wfxw, cjjg, cjjgmc, 1, photo1_url, photo2_url, photo3_url,  "", "2019-03-12")
+    # print(a)
+    list_a.append(a)
+  return list_a
 
 c.close()
 #关闭cursor
