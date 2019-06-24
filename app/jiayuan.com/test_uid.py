@@ -35,7 +35,7 @@ def get_uid(data):
 
 while True:
 	data = {'need': 20000, 'remark': "im test"}
-	
+
 	uid = get_uid(data)
 
 	log.info(uid)

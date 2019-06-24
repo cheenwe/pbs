@@ -1,4 +1,4 @@
-# coding =utf-8
+# coding=utf-8
 import  requests
 
 import sys
@@ -43,11 +43,10 @@ class RestApi:
   def check_info(self):
     r = requests.get(host + '/api/v1/dc/check_info')
     return(r.text)
- 
+
   def demo(self):
     r = requests.get('http://127.0.0.1:3001/users.json')
     return(r.text)
- 
 
   #获取爬虫爬取用户id
   def get_uid(self, data):

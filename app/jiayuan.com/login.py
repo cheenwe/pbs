@@ -7,7 +7,7 @@ pwd = os.getcwd()
 project_path=os.path.abspath(os.path.dirname(pwd)+os.path.sep+"..")
 sys.path.append(project_path)
 
-from proxy.proxy_valid import ValidIp
+from proxy.proxy import ValidIp
 
 from util.config import GetConfig
 
@@ -18,12 +18,12 @@ configs = GetConfig()
 # print(configs.user_name)
 # print(configs.user_password)
 
-# res = ValidIp('1','https://www.jiayuan.com' )
+# res = ValidIp("online",'https://www.jiayuan.com' )
 #获取ip
 
-proxies = ValidIp(True,'http://www.jiayuan.com' )
+proxies = ValidIp("local", "http://www.jiayuan.com")
 
-# proxies = ValidIp('1' , 'http://www.jiayuan.com' )
+# proxies = ValidIp("online" , 'http://www.jiayuan.com' )
 
 def GetUserCookie():
   img_url=str(configs.user_img_url) #'https://www.jiayuan.com/18126809'

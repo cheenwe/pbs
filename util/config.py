@@ -53,9 +53,13 @@ class GetConfig(object):
 
     #proxy ip config
     @LazyProperty
+    def proxy_max_retry_count(self):
+        return self.config_file.get('proxy','max_retry_count')
+
+    @LazyProperty
     def proxy_local(self):
         return self.config_file.get('proxy','local')
- 
+
     @LazyProperty
     def proxy_online(self):
         return self.config_file.get('proxy', 'online')
@@ -64,7 +68,7 @@ class GetConfig(object):
     @LazyProperty
     def user_img_url(self):
         return self.config_file.get('shijijiayuan','img_url')
- 
+
     @LazyProperty
     def user_login_url(self):
         return self.config_file.get('shijijiayuan', 'login_url')
@@ -84,7 +88,7 @@ class GetConfig(object):
     @LazyProperty
     def user_end_id(self):
         return self.config_file.get('shijijiayuan', 'end_id')
-        
+
     @LazyProperty
     def open_download(self):
         return self.config_file.get('shijijiayuan', 'open_download')
@@ -103,4 +107,4 @@ if __name__ == '__main__':
     print(configs.proxy_getter_functions)
     print(configs.host_ip)
     print(configs.host_port)
-    
+
