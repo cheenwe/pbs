@@ -27,14 +27,13 @@ logger.info('this is a log from web_socket')
 
 def on_message(ws, message):
 	data = json.loads(message)
-	print(data['type'])
-
-	if data['type'] == 'ping':
-		print(data['type'])
+	if ("identifier" in data) :
+		logger.info(data['identifier'])
+		logger.info(data['message'])
 
 	else:
+		print(data['type'])
 
-		logger.info(data)
 
 
 def on_error(ws, error):
